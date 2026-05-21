@@ -1,0 +1,790 @@
+{
+  "goals": {
+    "G-001": {
+      "title": "Cold email reach out",
+      "description": "",
+      "statusId": "in-progress",
+      "dueDate": "2026-05-22",
+      "tags": [],
+      "assignedTo": "",
+      "id": "G-001",
+      "createdAt": "2026-05-12T11:08:13.161Z",
+      "tasks": [
+        "T-031"
+      ],
+      "priorityId": "critical",
+      "blockId": "strategy"
+    },
+    "G-002": {
+      "title": "Опублікувати стаття",
+      "description": "",
+      "statusId": "backlog",
+      "dueDate": "2026-05-19",
+      "tags": [
+        "phd-1778586259777"
+      ],
+      "assignedTo": "",
+      "id": "G-002",
+      "createdAt": "2026-05-12T11:44:02.993Z",
+      "tasks": [
+        "T-001",
+        "T-021",
+        "T-010",
+        "T-011"
+      ],
+      "priorityId": "medium",
+      "blockId": "phd"
+    },
+    "G-007": {
+      "id": "G-007",
+      "title": "Гардероб на море",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "in-progress",
+      "dueDate": "2026-05-22",
+      "tags": [],
+      "assignedTo": "",
+      "createdAt": "2026-05-13T07:51:48.127Z",
+      "tasks": [
+        "T-018",
+        "T-019",
+        "T-020"
+      ],
+      "blockId": "personal"
+    },
+    "G-008": {
+      "id": "G-008",
+      "title": "Invoice hours brakdown Process",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-19",
+      "tags": [],
+      "assignedTo": "sofiia-okunska-1778741243984",
+      "createdAt": "2026-05-13T08:37:56.652Z",
+      "tasks": [
+        "T-024",
+        "T-025",
+        "T-029"
+      ],
+      "blockId": "operations"
+    },
+    "G-009": {
+      "id": "G-009",
+      "title": "Improve AgDev flow",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-19",
+      "tags": [],
+      "assignedTo": "",
+      "createdAt": "2026-05-15T13:45:57.731Z",
+      "tasks": [
+        "T-033",
+        "T-034",
+        "T-035",
+        "T-039",
+        "T-040",
+        "T-041",
+        "T-055"
+      ],
+      "blockId": "strategy"
+    },
+    "G-010": {
+      "id": "G-010",
+      "title": "QC analyzer",
+      "description": "2 тулзи,\n1 збір і аналіз стану what is, інвестігейшн як побудувати інтерв'ю, питання, транскрипти, як зібрати дані.\n\n",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "createdAt": "2026-05-16T11:26:10.655Z",
+      "tasks": [
+        "T-037",
+        "T-038"
+      ]
+    },
+    "G-011": {
+      "id": "G-011",
+      "title": "Jason backlog",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "createdAt": "2026-05-19T09:22:57.168Z",
+      "tasks": [
+        "T-043",
+        "T-044",
+        "T-045",
+        "T-049"
+      ]
+    },
+    "G-012": {
+      "id": "G-012",
+      "title": "Jetro",
+      "description": "",
+      "priorityId": "high",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "createdAt": "2026-05-19T09:25:30.100Z",
+      "tasks": [
+        "T-047",
+        "T-048"
+      ]
+    },
+    "G-013": {
+      "title": "Jason",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "G-013",
+      "createdAt": "2026-05-21T06:35:42.876Z",
+      "tasks": [
+        "T-051",
+        "T-052",
+        "T-050",
+        "T-054"
+      ]
+    }
+  },
+  "tasks": {
+    "T-001": {
+      "goalId": "G-002",
+      "title": "Кинути керівнику",
+      "description": "",
+      "statusId": "done",
+      "dueDate": "2026-05-13",
+      "tags": [
+        "phd-1778586259777"
+      ],
+      "assignedTo": "",
+      "id": "T-001",
+      "createdAt": "2026-05-12T14:09:21.925Z",
+      "priorityId": "medium",
+      "blockId": "phd"
+    },
+    "T-006": {
+      "goalId": "",
+      "title": "Ревювнути витрати за квітень",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "done",
+      "dueDate": "2026-05-19",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-006",
+      "createdAt": "2026-05-13T07:48:53.180Z"
+    },
+    "T-008": {
+      "goalId": "",
+      "title": "Податки оплатити",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "done",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-008",
+      "createdAt": "2026-05-13T07:49:10.979Z"
+    },
+    "T-010": {
+      "goalId": "G-002",
+      "title": "Написати рецензію",
+      "description": "",
+      "priorityId": "high",
+      "statusId": "done",
+      "dueDate": "2026-05-13",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "phd",
+      "id": "T-010",
+      "createdAt": "2026-05-13T07:50:58.894Z"
+    },
+    "T-011": {
+      "goalId": "G-002",
+      "title": "Відправити на журнал статтю",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "done",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "phd",
+      "id": "T-011",
+      "createdAt": "2026-05-13T07:51:10.327Z"
+    },
+    "T-012": {
+      "goalId": "",
+      "title": "Наступна стаття",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "backlog",
+      "dueDate": "2026-05-21",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "phd",
+      "id": "T-012",
+      "createdAt": "2026-05-13T07:51:21.277Z"
+    },
+    "T-018": {
+      "goalId": "G-007",
+      "title": "Плавки MD",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-018",
+      "createdAt": "2026-05-13T08:14:26.775Z",
+      "blockId": "personal"
+    },
+    "T-019": {
+      "goalId": "G-007",
+      "title": "Кроси бежеві адідас",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-019",
+      "createdAt": "2026-05-13T08:14:36.474Z",
+      "blockId": "personal"
+    },
+    "T-020": {
+      "goalId": "G-007",
+      "title": "Шорт, сорочка, шорти",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "done",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-020",
+      "createdAt": "2026-05-13T08:14:43.643Z",
+      "blockId": "personal"
+    },
+    "T-021": {
+      "goalId": "G-002",
+      "title": "Надіслати і оплатити ",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-20",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-021",
+      "createdAt": "2026-05-13T08:20:18.725Z",
+      "blockId": "phd"
+    },
+    "T-022": {
+      "goalId": "",
+      "title": "Ревювнути Гетро чи 1 і 2ий рівень заповненні правильно",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "done",
+      "dueDate": "2026-05-13",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "strategy",
+      "id": "T-022",
+      "createdAt": "2026-05-13T08:24:14.124Z"
+    },
+    "T-024": {
+      "goalId": "G-008",
+      "title": "Процес і воркфлов",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-22",
+      "tags": [],
+      "assignedTo": "sofiia-okunska-1778741243984",
+      "blockId": "operations",
+      "id": "T-024",
+      "createdAt": "2026-05-13T08:40:53.486Z"
+    },
+    "T-025": {
+      "goalId": "G-008",
+      "title": "Автоматизація",
+      "description": "",
+      "priorityId": "low",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-025",
+      "createdAt": "2026-05-13T08:41:05.935Z"
+    },
+    "T-026": {
+      "goalId": "",
+      "title": "Скін + бюті, що з інвойсом. чи він шось платив, і шо з скоупом",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "done",
+      "dueDate": "2026-05-13",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-026",
+      "createdAt": "2026-05-13T08:44:30.337Z"
+    },
+    "T-027": {
+      "goalId": "",
+      "title": "Нотаріус доки на кладовку",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-17",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "personal",
+      "id": "T-027",
+      "createdAt": "2026-05-13T09:37:52.681Z"
+    },
+    "T-029": {
+      "goalId": "G-008",
+      "title": "Бонуси по інвойсах за фактом оплати",
+      "description": "",
+      "priorityId": "low",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-029",
+      "createdAt": "2026-05-13T12:48:16.134Z"
+    },
+    "T-030": {
+      "goalId": "",
+      "title": "Набрати Вольво за кондюк",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "done",
+      "dueDate": "2026-05-14",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-030",
+      "createdAt": "2026-05-14T06:44:18.301Z",
+      "blockId": "personal"
+    },
+    "T-031": {
+      "goalId": "G-001",
+      "title": "Статус апдей",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-21",
+      "tags": [],
+      "assignedTo": "sofiia-okunska-1778741243984",
+      "id": "T-031",
+      "createdAt": "2026-05-14T06:44:43.751Z"
+    },
+    "T-033": {
+      "goalId": "G-009",
+      "title": "https://www.skills.sh/",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "in-progress",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "strategy",
+      "id": "T-033",
+      "createdAt": "2026-05-15T13:46:22.915Z"
+    },
+    "T-034": {
+      "goalId": "G-009",
+      "title": "Open spec",
+      "description": "",
+      "priorityId": "high",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "strategy",
+      "id": "T-034",
+      "createdAt": "2026-05-15T13:46:31.864Z"
+    },
+    "T-035": {
+      "goalId": "G-009",
+      "title": "https://koldovsky.github.io/2026-dou-day-workshop/33",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-20",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "strategy",
+      "id": "T-035",
+      "createdAt": "2026-05-15T13:46:43.897Z"
+    },
+    "T-037": {
+      "goalId": "G-010",
+      "title": "1 збір і аналіз стану what is, інвестігейшн як побудувати інтерв'ю, питання, транскрипти, як зібрати дані.",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-21",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "strategy",
+      "id": "T-037",
+      "createdAt": "2026-05-16T11:26:22.172Z"
+    },
+    "T-038": {
+      "goalId": "G-010",
+      "title": "2 аналізатори прогалин.",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "strategy",
+      "id": "T-038",
+      "createdAt": "2026-05-16T11:33:24.019Z"
+    },
+    "T-039": {
+      "goalId": "G-009",
+      "title": "Connect skills to Claude",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-039",
+      "createdAt": "2026-05-19T08:40:51.599Z"
+    },
+    "T-040": {
+      "goalId": "G-009",
+      "title": "Create a tool for audit of the current company processes",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-040",
+      "createdAt": "2026-05-19T08:41:42.464Z"
+    },
+    "T-041": {
+      "goalId": "G-009",
+      "title": "karpathy Skills ",
+      "description": "https://github.com/multica-ai/andrej-karpathy-skills",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-041",
+      "createdAt": "2026-05-19T08:54:23.554Z"
+    },
+    "T-043": {
+      "goalId": "G-011",
+      "title": "Add to calendar with link",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-19",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-043",
+      "createdAt": "2026-05-19T09:23:05.368Z"
+    },
+    "T-044": {
+      "goalId": "G-011",
+      "title": "Web version for mob capability",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-22",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-044",
+      "createdAt": "2026-05-19T09:23:15.483Z"
+    },
+    "T-045": {
+      "goalId": "G-011",
+      "title": "Weekly Goal",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-045",
+      "createdAt": "2026-05-19T09:23:45.300Z"
+    },
+    "T-047": {
+      "goalId": "G-012",
+      "title": "Ревю кварталу",
+      "description": "",
+      "priorityId": "critical",
+      "statusId": "todo",
+      "dueDate": "2026-05-22",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-047",
+      "createdAt": "2026-05-19T09:25:34.081Z"
+    },
+    "T-048": {
+      "goalId": "G-012",
+      "title": "Планування на червень",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-24",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-048",
+      "createdAt": "2026-05-19T09:25:43.931Z"
+    },
+    "T-049": {
+      "goalId": "G-011",
+      "title": "Move tasks from Jetro",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-049",
+      "createdAt": "2026-05-19T09:30:23.160Z"
+    },
+    "T-050": {
+      "goalId": "G-013",
+      "title": "Взяти делеговану таску на контроль",
+      "description": "- Швидкий асайнмент\n- Період і/чи дюдейт\n- Блок для коментів\n- Що є результатом задачі",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-050",
+      "createdAt": "2026-05-19T09:34:11.669Z"
+    },
+    "T-051": {
+      "goalId": "G-013",
+      "title": "Простіший спосіб статуси міняти",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-051",
+      "createdAt": "2026-05-19T09:39:11.931Z"
+    },
+    "T-052": {
+      "goalId": "G-013",
+      "title": "Підсвітити таск деталі",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "operations",
+      "id": "T-052",
+      "createdAt": "2026-05-19T09:39:34.991Z"
+    },
+    "T-053": {
+      "goalId": "",
+      "title": "Блок підсідка на початку таски, а не статус",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-053",
+      "createdAt": "2026-05-19T09:40:30.322Z"
+    },
+    "T-054": {
+      "goalId": "G-013",
+      "title": "Додавати таски з Телеграму",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-054",
+      "createdAt": "2026-05-19T09:53:26.935Z"
+    },
+    "T-055": {
+      "goalId": "G-009",
+      "title": "Auto reserch Kaparty",
+      "description": "",
+      "priorityId": "critical",
+      "statusId": "todo",
+      "dueDate": "",
+      "tags": [],
+      "assignedTo": "",
+      "id": "T-055",
+      "createdAt": "2026-05-19T09:53:37.551Z"
+    },
+    "T-056": {
+      "goalId": "",
+      "title": "Записатись на консультацію по харчових добавках",
+      "description": "",
+      "priorityId": "medium",
+      "statusId": "todo",
+      "dueDate": "2026-05-24",
+      "tags": [],
+      "assignedTo": "",
+      "blockId": "personal",
+      "id": "T-056",
+      "createdAt": "2026-05-19T09:55:03.099Z"
+    }
+  },
+  "settings": {
+    "googleClientId": "",
+    "statuses": [
+      {
+        "id": "backlog",
+        "label": "Backlog",
+        "color": "#6b7280",
+        "order": 0
+      },
+      {
+        "id": "todo",
+        "label": "To Do",
+        "color": "#3b82f6",
+        "order": 1
+      },
+      {
+        "id": "in-progress",
+        "label": "In Progress",
+        "color": "#f59e0b",
+        "order": 2
+      },
+      {
+        "id": "done",
+        "label": "Done",
+        "color": "#10b981",
+        "order": 3
+      }
+    ],
+    "priorities": [
+      {
+        "id": "critical",
+        "label": "1-Critical",
+        "color": "#991b1b",
+        "order": 0
+      },
+      {
+        "id": "high",
+        "label": "2-High",
+        "color": "#2563eb",
+        "order": 1
+      },
+      {
+        "id": "medium",
+        "label": "3-Medium",
+        "color": "#14b8a6",
+        "order": 2
+      },
+      {
+        "id": "low",
+        "label": "4-Low",
+        "color": "#facc15",
+        "order": 3
+      },
+      {
+        "id": "minimal",
+        "label": "5-Minimal",
+        "color": "#9ca3af",
+        "order": 4
+      }
+    ],
+    "tags": [
+      {
+        "id": "finance",
+        "label": "Finance",
+        "color": "#06b6d4"
+      },
+      {
+        "id": "ops",
+        "label": "Operations",
+        "color": "#f97316"
+      },
+      {
+        "id": "hr",
+        "label": "HR",
+        "color": "#ec4899"
+      },
+      {
+        "id": "sales-1778584110458",
+        "label": "Sales",
+        "color": "#f97316"
+      },
+      {
+        "id": "phd-1778586259777",
+        "label": "Phd",
+        "color": "#a855f7"
+      }
+    ],
+    "people": [
+      {
+        "id": "sofiia-okunska-1778741243984",
+        "name": "Sofiia Okunska",
+        "email": "sokunska@quitcode.com"
+      },
+      {
+        "id": "anastasiia-kotsinska-1778741270334",
+        "name": "Anastasiia Kotsinska",
+        "email": "akotsinska@quitcode.com"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "personal",
+        "label": "Personal",
+        "color": "#22c55e",
+        "order": 2
+      },
+      {
+        "id": "phd",
+        "label": "PhD",
+        "color": "#eab308",
+        "order": 3
+      },
+      {
+        "id": "operations",
+        "label": "Operations",
+        "color": "#f97316",
+        "order": 0
+      },
+      {
+        "id": "strategy",
+        "label": "Strategy",
+        "color": "#3b82f6",
+        "order": 1
+      }
+    ]
+  },
+  "goalCounter": 13,
+  "taskCounter": 56
+}
