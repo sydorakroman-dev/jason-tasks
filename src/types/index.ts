@@ -68,6 +68,7 @@ export interface AppSettings {
   tags: Tag[];
   people: Person[];
   blocks: Block[];
+  theme: 'light' | 'dark' | 'system';
 }
 
 export type ViewMode = 'list' | 'kanban';

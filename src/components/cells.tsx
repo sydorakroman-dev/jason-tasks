@@ -107,7 +107,7 @@ export function EditableText({
           else if (e.key === 'Enter') { e.preventDefault(); commit(); }
           else if (e.key === 'Escape') { setDraft(value); setEditing(false); }
         }}
-        className={`w-full bg-transparent outline-none border-b-2 border-indigo-400 py-0 leading-snug resize-none overflow-hidden ${bold ? 'font-semibold text-gray-900' : 'text-gray-700 text-sm'}`}
+        className={`w-full bg-transparent outline-none border-b-2 border-indigo-400 py-0 leading-snug resize-none overflow-hidden ${bold ? 'font-semibold text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 text-sm'}`}
       />
     );
   }
@@ -121,8 +121,8 @@ export function EditableText({
         onMouseLeave={hideTooltip}
         className={`block w-full cursor-text rounded px-1 -mx-1 truncate leading-snug
           hover:bg-black/[0.04] transition
-          ${bold ? 'font-semibold text-gray-900' : 'text-sm text-gray-700'}
-          ${!value ? 'text-gray-300' : ''}`}
+          ${bold ? 'font-semibold text-gray-900 dark:text-white' : 'text-sm text-gray-700 dark:text-gray-300'}
+          ${!value ? 'text-gray-300 dark:text-gray-600' : ''}`}
       >
         {value || placeholder || ''}
       </span>
@@ -158,13 +158,13 @@ export function SelectCell<T extends string | number>({
         <div
           ref={menuRef}
           style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 9999 }}
-          className="bg-white shadow-2xl rounded-xl border border-gray-100 py-1 min-w-max"
+          className="bg-white dark:bg-gray-800 shadow-2xl rounded-xl border border-gray-100 dark:border-gray-700 py-1 min-w-max"
         >
           {options.map(opt => (
             <button
               key={String(opt.value)}
               onClick={() => { onChange(opt.value); setOpen(false); }}
-              className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50"
+              className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               {opt.badge}
               {opt.value === value && <Check size={10} className="ml-auto text-indigo-500 shrink-0" />}
@@ -185,9 +185,9 @@ export function DateCell({ value, onChange }: { value: string; onChange: (v: str
       value={value}
       onChange={e => onChange(e.target.value)}
       className={`text-xs border-0 outline-none bg-transparent cursor-pointer
-        hover:bg-black/[0.04] rounded px-1 w-full transition
-        ${overdue ? 'text-red-500' : 'text-gray-600'}
-        ${!value ? 'text-gray-300' : ''}`}
+        hover:bg-black/[0.04] dark:hover:bg-white/[0.06] rounded px-1 w-full transition
+        ${overdue ? 'text-red-500' : 'text-gray-600 dark:text-gray-400'}
+        ${!value ? 'text-gray-300 dark:text-gray-600' : ''}`}
     />
   );
 }
@@ -200,21 +200,34 @@ export function getFocusDate(level: FocusLevel): string {
   const d = new Date();
   if (level === '3d') d.setDate(d.getDate() + 3);
   if (level === '5d') d.setDate(d.getDate() + 5);
-  return d.toISOString().slice(0, 10);
+  return d.toLocaleDateString('en-CA'); // YYYY-MM-DD in local time, not UTC
 }
 
 export function computeFocusLevel(dueDate: string): FocusLevel | undefined {
   if (!dueDate) return undefined;
-  if (dueDate === getFocusDate('today')) return 'today';
-  if (dueDate === getFocusDate('3d'))    return '3d';
-  if (dueDate === getFocusDate('5d'))    return '5d';
+  const today = getFocusDate('today');
+  const d3    = getFocusDate('3d');
+  const d5    = getFocusDate('5d');
+  if (dueDate <= today) return 'today';
+  if (dueDate <= d3)    return '3d';
+  if (dueDate <= d5)    return '5d';
   return undefined;
 }
 
-const FOCUS_OPTS: { level: FocusLevel; label: string; title: string; color: string }[] = [
-  { level: 'today', label: 'T', title: 'Today',  color: '#ef4444' },
-  { level: '3d',    label: '3', title: '3 days', color: '#f97316' },
-  { level: '5d',    label: '5', title: '5 days', color: '#3b82f6' },
+function getFocusTitle(level: FocusLevel): string {
+  const d = new Date();
+  if (level === '3d') d.setDate(d.getDate() + 3);
+  if (level === '5d') d.setDate(d.getDate() + 5);
+  const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (level === 'today') return `Today — ${dateStr}`;
+  if (level === '3d')    return `3 days — ${dateStr}`;
+  return `5 days — ${dateStr}`;
+}
+
+const FOCUS_OPTS: { level: FocusLevel; label: string; color: string }[] = [
+  { level: 'today', label: 'T', color: '#ef4444' },
+  { level: '3d',    label: '3', color: '#f97316' },
+  { level: '5d',    label: '5', color: '#3b82f6' },
 ];
 
 export function FocusButtons({ dueDate, onChange, size = 'sm' }: {
@@ -233,7 +246,7 @@ export function FocusButtons({ dueDate, onChange, size = 'sm' }: {
         return (
           <button
             key={o.level}
-            title={o.title}
+            title={getFocusTitle(o.level)}
             onClick={e => { e.stopPropagation(); onChange(isActive ? '' : getFocusDate(o.level)); }}
             className={`${btnCls} transition-all flex items-center justify-center shrink-0 ${isActive ? 'text-white shadow-sm' : 'text-gray-400 hover:text-gray-700 bg-transparent hover:bg-gray-100'}`}
             style={isActive ? { backgroundColor: o.color } : undefined}
@@ -280,10 +293,10 @@ export function TagsCell({ tagIds, allTags, onChange }: {
         <div
           ref={menuRef}
           style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 9999 }}
-          className="bg-white shadow-2xl rounded-xl border border-gray-100 py-1 min-w-[160px]"
+          className="bg-white dark:bg-gray-800 shadow-2xl rounded-xl border border-gray-100 dark:border-gray-700 py-1 min-w-[160px]"
         >
           {allTags.length === 0
-            ? <p className="px-3 py-2 text-xs text-gray-400">Configure tags in Settings</p>
+            ? <p className="px-3 py-2 text-xs text-gray-400 dark:text-gray-500">Configure tags in Settings</p>
             : allTags.map(tag => (
               <button
                 key={tag.id}
@@ -292,10 +305,10 @@ export function TagsCell({ tagIds, allTags, onChange }: {
                     ? tagIds.filter(id => id !== tag.id)
                     : [...tagIds, tag.id]);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50"
+                className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
-                <span className="text-xs text-gray-700">{tag.label}</span>
+                <span className="text-xs text-gray-700 dark:text-gray-300">{tag.label}</span>
                 {tagIds.includes(tag.id) && <Check size={10} className="ml-auto text-indigo-500" />}
               </button>
             ))}

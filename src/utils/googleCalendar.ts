@@ -1,3 +1,32 @@
+export function buildCalendarUrl(title: string, description?: string, dueDate?: string): string {
+  const base = 'https://calendar.google.com/calendar/u/0/r/eventedit';
+
+  const addDays = (n: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    return d.toLocaleDateString('en-CA'); // YYYY-MM-DD in local time, not UTC
+  };
+  const todayStr = addDays(0);
+
+  let calendarDate: string;
+  if (!dueDate)                  calendarDate = todayStr;
+  else if (dueDate === todayStr) calendarDate = todayStr;        // focus "today"
+  else if (dueDate === addDays(3)) calendarDate = addDays(1);   // focus "3 days" → tomorrow
+  else if (dueDate === addDays(5)) calendarDate = addDays(2);   // focus "5 days" → day after tomorrow
+  else                           calendarDate = dueDate;
+
+  const [year, month, day] = calendarDate.split('-');
+  const startStr = `${year}${month}${day}T110000`;
+  const endStr   = `${year}${month}${day}T113000`;
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${startStr}/${endStr}`,
+  });
+  if (description) params.set('details', description);
+  return `${base}?${params.toString()}`;
+}
+
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 

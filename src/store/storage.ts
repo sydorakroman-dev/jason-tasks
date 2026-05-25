@@ -5,6 +5,7 @@ const API = '/api/data';
 
 export const DEFAULT_SETTINGS: AppSettings = {
   googleClientId: '',
+  theme: 'system',
   statuses: [
     { id: 'backlog',      label: 'Backlog',      color: '#6b7280', order: 0 },
     { id: 'todo',         label: 'To Do',        color: '#3b82f6', order: 1 },
@@ -62,6 +63,7 @@ function migrate(raw: any): AppState {
   const settings = { ...DEFAULT_SETTINGS, ...raw.settings };
   if (!settings.priorities) settings.priorities = DEFAULT_SETTINGS.priorities;
   if (!settings.people)     settings.people     = [];
+  if (!settings.theme) settings.theme = 'system';
   if (!settings.blocks) {
     settings.blocks = DEFAULT_SETTINGS.blocks;
   } else {

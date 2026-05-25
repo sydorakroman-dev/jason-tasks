@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X, CalendarPlus } from 'lucide-react';
 import type { Task, Goal, DetailItem } from '../types';
 import type { AppStore } from '../store/useAppStore';
 import { SelectCell, DateCell, TagsCell, FocusButtons } from './cells';
+import { buildCalendarUrl } from '../utils/googleCalendar';
 
 interface Props {
   item: DetailItem;
   store: AppStore;
   onClose: () => void;
+  onNavigate?: (item: DetailItem) => void;
 }
 
 function TextareaField({ value, onChange, placeholder }: {
@@ -34,21 +36,35 @@ function TextareaField({ value, onChange, placeholder }: {
       onBlur={() => { if (draft !== value) onChange(draft); }}
       placeholder={placeholder}
       rows={3}
-      className="w-full resize-none outline-none text-sm text-gray-700 leading-relaxed placeholder:text-gray-300 bg-transparent min-h-[60px]"
+      className="w-full resize-none outline-none text-sm text-gray-700 dark:text-gray-300 leading-relaxed placeholder:text-gray-300 dark:placeholder:text-gray-600 bg-transparent min-h-[60px]"
+    />
+  );
+}
+
+function TitleField({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => { setDraft(value); }, [value]);
+  return (
+    <input
+      value={draft}
+      onChange={e => setDraft(e.target.value)}
+      onBlur={() => { if (draft !== value) onChange(draft); }}
+      placeholder={placeholder}
+      className="w-full text-xl font-semibold text-gray-900 dark:text-white outline-none border-b-2 border-transparent focus:border-indigo-300 pb-1 mb-5 placeholder:text-gray-300 dark:placeholder:text-gray-600 bg-transparent transition"
     />
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-4 py-2.5 border-b border-gray-100 last:border-0">
-      <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider w-20 shrink-0 pt-0.5 leading-tight">{label}</span>
+    <div className="flex items-start gap-4 py-2.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+      <span className="text-[11px] text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider w-20 shrink-0 pt-0.5 leading-tight">{label}</span>
       <div className="flex-1 min-w-0">{children}</div>
     </div>
   );
 }
 
-export function DetailPanel({ item, store, onClose }: Props) {
+export function DetailPanel({ item, store, onClose, onNavigate }: Props) {
   const { state, updateTask, updateGoal } = store;
   const { tasks, goals, settings } = state;
 
@@ -149,40 +165,49 @@ export function DetailPanel({ item, store, onClose }: Props) {
   const subTasks   = !isTask ? goal!.tasks.map(tid => tasks[tid]).filter(Boolean) as Task[] : [];
 
   return createPortal(
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
     <div
-      className={`fixed right-0 top-14 bottom-0 w-[440px] bg-white border-l border-gray-200 z-50 flex flex-col transition-transform duration-200 ease-out ${visible ? 'translate-x-0' : 'translate-x-full'}`}
+      className={`fixed right-0 top-14 bottom-0 w-[440px] bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 flex flex-col transition-transform duration-200 ease-out ${visible ? 'translate-x-0' : 'translate-x-full'}`}
       style={{ boxShadow: '-8px 0 32px rgba(0,0,0,0.08)' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 shrink-0">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{id}</span>
-          <span className="text-xs font-medium text-gray-400">{isTask ? 'Task' : 'Goal'}</span>
+          <span className="text-[10px] font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">{id}</span>
+          <span className="text-xs font-medium text-gray-400 dark:text-gray-500">{isTask ? 'Task' : 'Goal'}</span>
         </div>
-        <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-          <X size={16} />
-        </button>
+        <div className="flex items-center gap-1">
+          <a
+            href={buildCalendarUrl(title, desc || undefined, dueDate || undefined)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Add to Google Calendar"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 transition-colors font-medium"
+          >
+            <CalendarPlus size={13} />
+            Add to Calendar
+          </a>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+            <X size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Body */}
       <div className="flex-1 overflow-y-auto px-5 py-5">
 
-        {/* Title */}
-        <input
-          value={title}
-          onChange={e => onUpdateTitle(e.target.value)}
-          placeholder={isTask ? 'Task title…' : 'Goal title…'}
-          className="w-full text-xl font-semibold text-gray-900 outline-none border-b-2 border-transparent focus:border-indigo-300 pb-1 mb-5 placeholder:text-gray-300 bg-transparent transition"
-        />
+        {/* Title — draft state prevents a save on every keystroke */}
+        <TitleField value={title} onChange={onUpdateTitle} placeholder={isTask ? 'Task title…' : 'Goal title…'} />
 
         {/* Description */}
         <div className="mb-5">
-          <div className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-1.5">Description</div>
+          <div className="text-[11px] text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider mb-1.5">Description</div>
           <TextareaField value={desc} onChange={onUpdateDesc} placeholder="Add a description…" />
         </div>
 
         {/* Fields card */}
-        <div className="rounded-xl border border-gray-100 bg-gray-50/40 px-3 mb-5">
+        <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/40 dark:bg-gray-800/30 px-3 mb-5">
           <Field label="Status">
             <SelectCell value={statusId} options={statusOptions} renderBadge={renderStatus}
               onChange={v => isTask ? updateTask(id, { statusId: v }) : updateGoal(id, { statusId: v })} />
@@ -221,7 +246,7 @@ export function DetailPanel({ item, store, onClose }: Props) {
           {/* Task-only: linked goal */}
           {linkedGoal && (
             <Field label="Goal">
-              <span className="text-xs text-indigo-600 font-medium">{linkedGoal.title || '(untitled)'}</span>
+              <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">{linkedGoal.title || '(untitled)'}</span>
             </Field>
           )}
         </div>
@@ -229,27 +254,32 @@ export function DetailPanel({ item, store, onClose }: Props) {
         {/* Goal-only: sub-task list */}
         {!isTask && subTasks.length > 0 && (
           <div className="mb-5">
-            <div className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-2">
+            <div className="text-[11px] text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider mb-2">
               Tasks ({subTasks.length})
             </div>
             <div className="space-y-1">
               {subTasks.map(t => (
-                <div key={t.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                  <span className="text-[10px] font-mono text-gray-400 shrink-0">{t.id}</span>
-                  <span className="text-sm text-gray-700 flex-1 min-w-0 truncate">{t.title || '(untitled)'}</span>
+                <button
+                  key={t.id}
+                  onClick={() => onNavigate && onNavigate({ kind: 'task', id: t.id })}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors text-left group"
+                >
+                  <span className="text-[10px] font-mono shrink-0 px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{t.id}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 min-w-0 truncate">{t.title || '(untitled)'}</span>
                   {renderStatus(t.statusId)}
-                </div>
+                </button>
               ))}
             </div>
           </div>
         )}
 
         {/* Created at */}
-        <div className="text-[11px] text-gray-400">
+        <div className="text-[11px] text-gray-400 dark:text-gray-500">
           Created {new Date(createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
         </div>
       </div>
-    </div>,
+    </div>
+    </>,
     document.body
   );
 }

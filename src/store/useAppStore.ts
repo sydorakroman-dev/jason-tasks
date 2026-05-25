@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { AppState, Goal, Task, AppSettings, Status, Priority, Tag, Person, Block } from '../types';
 import { loadLocalState, saveLocalState, loadRemoteState, scheduleSaveRemote } from './storage';
 
@@ -7,10 +7,15 @@ function nextTaskId(counter: number) { return `T-${String(counter + 1).padStart(
 
 export function useAppStore() {
   const [state, setState] = useState<AppState>(() => loadLocalState());
+  const initialLocalRef = useRef<AppState | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    loadRemoteState().then(remote => { if (remote) setState(remote); setHydrated(true); });
+    initialLocalRef.current = state;
+    loadRemoteState().then(remote => {
+      if (remote) setState(current => current === initialLocalRef.current ? remote : current);
+      setHydrated(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -44,11 +49,12 @@ export function useAppStore() {
   const addTask = useCallback((data: Omit<Task, 'id' | 'createdAt'>) => {
     setState(s => {
       const id = nextTaskId(s.taskCounter);
-      const goal = s.goals[data.goalId];
+      const goalId = s.goals[data.goalId] ? data.goalId : '';
+      const goal = goalId ? s.goals[goalId] : null;
       return {
         ...s, taskCounter: s.taskCounter + 1,
-        tasks: { ...s.tasks, [id]: { ...data, id, createdAt: new Date().toISOString() } },
-        goals: goal ? { ...s.goals, [data.goalId]: { ...goal, tasks: [...goal.tasks, id] } } : s.goals,
+        tasks: { ...s.tasks, [id]: { ...data, id, goalId, createdAt: new Date().toISOString() } },
+        goals: goal ? { ...s.goals, [goalId]: { ...goal, tasks: [...goal.tasks, id] } } : s.goals,
       };
     });
   }, []);
@@ -81,7 +87,14 @@ export function useAppStore() {
     setState(s => ({ ...s, settings: { ...s.settings, statuses: s.settings.statuses.map(st => st.id === id ? { ...st, ...data } : st) } }));
   }, []);
   const deleteStatus = useCallback((id: string) => {
-    setState(s => ({ ...s, settings: { ...s.settings, statuses: s.settings.statuses.filter(st => st.id !== id) } }));
+    setState(s => {
+      const fallback = s.settings.statuses.find(st => st.id !== id)?.id ?? '';
+      const goals = Object.fromEntries(Object.entries(s.goals).map(([k, g]) =>
+        [k, g.statusId === id ? { ...g, statusId: fallback } : g]));
+      const tasks = Object.fromEntries(Object.entries(s.tasks).map(([k, t]) =>
+        [k, t.statusId === id ? { ...t, statusId: fallback } : t]));
+      return { ...s, goals, tasks, settings: { ...s.settings, statuses: s.settings.statuses.filter(st => st.id !== id) } };
+    });
   }, []);
 
   // Priorities
@@ -92,7 +105,14 @@ export function useAppStore() {
     setState(s => ({ ...s, settings: { ...s.settings, priorities: s.settings.priorities.map(p => p.id === id ? { ...p, ...data } : p) } }));
   }, []);
   const deletePriority = useCallback((id: string) => {
-    setState(s => ({ ...s, settings: { ...s.settings, priorities: s.settings.priorities.filter(p => p.id !== id) } }));
+    setState(s => {
+      const fallback = s.settings.priorities.find(p => p.id !== id)?.id ?? '';
+      const goals = Object.fromEntries(Object.entries(s.goals).map(([k, g]) =>
+        [k, g.priorityId === id ? { ...g, priorityId: fallback } : g]));
+      const tasks = Object.fromEntries(Object.entries(s.tasks).map(([k, t]) =>
+        [k, t.priorityId === id ? { ...t, priorityId: fallback } : t]));
+      return { ...s, goals, tasks, settings: { ...s.settings, priorities: s.settings.priorities.filter(p => p.id !== id) } };
+    });
   }, []);
 
   // Tags
@@ -103,7 +123,13 @@ export function useAppStore() {
     setState(s => ({ ...s, settings: { ...s.settings, tags: s.settings.tags.map(t => t.id === id ? { ...t, ...data } : t) } }));
   }, []);
   const deleteTag = useCallback((id: string) => {
-    setState(s => ({ ...s, settings: { ...s.settings, tags: s.settings.tags.filter(t => t.id !== id) } }));
+    setState(s => {
+      const goals = Object.fromEntries(Object.entries(s.goals).map(([k, g]) =>
+        [k, g.tags.includes(id) ? { ...g, tags: g.tags.filter(t => t !== id) } : g]));
+      const tasks = Object.fromEntries(Object.entries(s.tasks).map(([k, t]) =>
+        [k, t.tags.includes(id) ? { ...t, tags: t.tags.filter(tag => tag !== id) } : t]));
+      return { ...s, goals, tasks, settings: { ...s.settings, tags: s.settings.tags.filter(t => t.id !== id) } };
+    });
   }, []);
 
   // People
@@ -114,7 +140,13 @@ export function useAppStore() {
     setState(s => ({ ...s, settings: { ...s.settings, people: s.settings.people.map(p => p.id === id ? { ...p, ...data } : p) } }));
   }, []);
   const deletePerson = useCallback((id: string) => {
-    setState(s => ({ ...s, settings: { ...s.settings, people: s.settings.people.filter(p => p.id !== id) } }));
+    setState(s => {
+      const goals = Object.fromEntries(Object.entries(s.goals).map(([k, g]) =>
+        [k, g.assignedTo === id ? { ...g, assignedTo: '' } : g]));
+      const tasks = Object.fromEntries(Object.entries(s.tasks).map(([k, t]) =>
+        [k, t.assignedTo === id ? { ...t, assignedTo: '' } : t]));
+      return { ...s, goals, tasks, settings: { ...s.settings, people: s.settings.people.filter(p => p.id !== id) } };
+    });
   }, []);
 
   // Move task from one goal to another (or to standalone when targetGoalId = '')
@@ -186,7 +218,13 @@ export function useAppStore() {
     setState(s => ({ ...s, settings: { ...s.settings, blocks: s.settings.blocks.map(b => b.id === id ? { ...b, ...data } : b) } }));
   }, []);
   const deleteBlock = useCallback((id: string) => {
-    setState(s => ({ ...s, settings: { ...s.settings, blocks: s.settings.blocks.filter(b => b.id !== id) } }));
+    setState(s => {
+      const goals = Object.fromEntries(Object.entries(s.goals).map(([k, g]) =>
+        [k, g.blockId === id ? { ...g, blockId: undefined } : g]));
+      const tasks = Object.fromEntries(Object.entries(s.tasks).map(([k, t]) =>
+        [k, t.blockId === id ? { ...t, blockId: undefined } : t]));
+      return { ...s, goals, tasks, settings: { ...s.settings, blocks: s.settings.blocks.filter(b => b.id !== id) } };
+    });
   }, []);
 
   return {

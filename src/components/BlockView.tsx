@@ -12,23 +12,25 @@ import {
   useDroppable, useDraggable,
   type DragStartEvent, type DragEndEvent,
 } from '@dnd-kit/core';
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronRight, Unlink, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronRight, Unlink, ArrowUp, ArrowDown, CalendarPlus } from 'lucide-react';
 import type { Goal, Task, Block, DetailItem } from '../types';
 import type { AppStore } from '../store/useAppStore';
 import { EditableText, SelectCell, DateCell, FocusButtons } from './cells';
 import { useConfirm } from './ConfirmDialog';
+import { buildCalendarUrl } from '../utils/googleCalendar';
+import { toast } from 'sonner';
 
 interface Props { store: AppStore; onOpenDetail: (item: DetailItem) => void; }
 
 // ─── Column layout ────────────────────────────────────────────────────────────
 // drag/chevron | title | priority | status | due date | actions
-const GRID = 'grid grid-cols-[18px_minmax(120px,1fr)_100px_110px_94px_76px_28px]';
+const GRID = 'grid grid-cols-[18px_minmax(120px,1fr)_100px_110px_94px_76px_52px]';
 
 type SortField = 'title' | 'priority' | 'status' | 'dueDate';
 type SortDir   = 'asc' | 'desc';
 
 function ColHeader({ children }: { children: React.ReactNode }) {
-  return <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest select-none">{children}</div>;
+  return <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest select-none">{children}</div>;
 }
 
 // ─── Shared context ───────────────────────────────────────────────────────────
@@ -38,6 +40,7 @@ interface BlockCtxType {
   priorityOptions: { value: string; badge: React.ReactNode }[];
   renderStatus: (id: string) => React.ReactNode;
   renderPriority: (id: string) => React.ReactNode;
+  sortedStatusIds: string[];
   focusId: string | null;
   activeTaskId: string | null;
   ask: (title: string, msg: string, cb: () => void) => void;
@@ -61,7 +64,7 @@ interface TaskRowProps {
 }
 
 function DraggableBlockTaskRow({ task, variant, onUpdate, onDelete, onDetach, onPromoteAndAdd, onShiftEnter }: TaskRowProps) {
-  const { statusOptions, priorityOptions, renderStatus, renderPriority, focusId, activeTaskId, ask, onOpenDetail } = useContext(BlockCtx);
+  const { statusOptions, priorityOptions, renderStatus, renderPriority, sortedStatusIds, focusId, activeTaskId, ask, onOpenDetail } = useContext(BlockCtx);
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id });
 
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 20 } : undefined;
@@ -72,7 +75,7 @@ function DraggableBlockTaskRow({ task, variant, onUpdate, onDelete, onDetach, on
     <div
       ref={setNodeRef}
       style={style}
-      className={`${GRID} items-center px-2 py-0.5 border-b border-gray-100 group transition-colors ${indent ? 'bg-gray-50/60 hover:bg-gray-100/60' : 'hover:bg-gray-50/50'} ${isBeingDragged ? 'opacity-30' : ''}`}
+      className={`${GRID} items-center px-2 py-0.5 border-b border-gray-100 dark:border-gray-700 group transition-colors ${indent ? 'bg-gray-50/60 dark:bg-gray-800/30 hover:bg-gray-100/60 dark:hover:bg-gray-800/60' : 'hover:bg-gray-50/50 dark:hover:bg-gray-800/30'} ${isBeingDragged ? 'opacity-30' : ''}`}
     >
       {/* Drag handle */}
       <button
@@ -87,7 +90,7 @@ function DraggableBlockTaskRow({ task, variant, onUpdate, onDelete, onDetach, on
       {/* Title */}
       <div className={`flex items-center gap-1.5 min-w-0 pr-2 ${indent ? 'pl-4' : ''}`}>
         {indent && <div className="w-2.5 h-2.5 rounded border-2 border-gray-300 shrink-0" />}
-        <button onClick={() => onOpenDetail({ kind: 'task', id: task.id })} className="text-[9px] font-mono text-gray-300 shrink-0 hover:text-indigo-400 transition-colors leading-none">{task.id}</button>
+        <button onClick={() => onOpenDetail({ kind: 'task', id: task.id })} className="text-[9px] font-mono shrink-0 leading-none px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{task.id}</button>
         <EditableText value={task.title} onChange={v => onUpdate({ title: v })} placeholder="Task title..." autoFocus={focusId === task.id} onShiftEnter={onShiftEnter} />
       </div>
 
@@ -97,8 +100,13 @@ function DraggableBlockTaskRow({ task, variant, onUpdate, onDelete, onDetach, on
       </div>
 
       {/* Status */}
-      <div className="pr-1">
+      <div className="pr-1 flex items-center gap-0.5">
         <SelectCell value={task.statusId} options={statusOptions} renderBadge={renderStatus} onChange={v => onUpdate({ statusId: v })} />
+        <button
+          onClick={e => { e.stopPropagation(); const i = sortedStatusIds.indexOf(task.statusId); onUpdate({ statusId: sortedStatusIds[(i + 1) % sortedStatusIds.length] }); }}
+          title="Next status"
+          className="shrink-0 flex items-center justify-center w-4 h-4 rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-400 hover:border-gray-400 dark:hover:border-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        ><ChevronRight size={9} /></button>
       </div>
 
       {/* Due date */}
@@ -110,12 +118,13 @@ function DraggableBlockTaskRow({ task, variant, onUpdate, onDelete, onDetach, on
       {/* Actions */}
       <div className="flex items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
         {onDetach && (
-          <button onClick={onDetach} title="Detach from goal" className="p-0.5 rounded hover:bg-amber-50 text-amber-400 transition-colors"><Unlink size={11} /></button>
+          <button onClick={onDetach} title="Detach from goal" className="p-1 rounded hover:bg-amber-50 text-amber-400 transition-colors"><Unlink size={13} /></button>
         )}
         {onPromoteAndAdd && (
-          <button onClick={onPromoteAndAdd} title="Add sub-task (converts to goal)" className="p-0.5 rounded hover:bg-indigo-50 text-indigo-400 transition-colors"><Plus size={11} /></button>
+          <button onClick={onPromoteAndAdd} title="Add sub-task (converts to goal)" className="p-1 rounded hover:bg-indigo-50 text-indigo-400 transition-colors"><Plus size={13} /></button>
         )}
-        <button onClick={() => ask('Delete Task', `"${task.title || 'Untitled'}" will be permanently deleted.`, onDelete)} className="p-0.5 rounded hover:bg-red-50 text-red-400 transition-colors"><Trash2 size={11} /></button>
+        <a href={buildCalendarUrl(task.title, task.description || undefined, task.dueDate || undefined)} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} title="Add to Google Calendar" className="p-1 rounded hover:bg-blue-50 text-blue-400 transition-colors"><CalendarPlus size={13} /></a>
+        <button onClick={() => ask('Delete Task', `"${task.title || 'Untitled'}" will be permanently deleted.`, onDelete)} className="p-1 rounded hover:bg-red-50 text-red-400 transition-colors"><Trash2 size={13} /></button>
       </div>
     </div>
   );
@@ -135,13 +144,13 @@ interface BlockGoalSectionProps {
 }
 
 function BlockGoalSection({ goal, blockTasks, onUpdateGoal, onDeleteGoal, onUpdateTask, onDeleteTask, onDetachTask, onAddSubTask }: BlockGoalSectionProps) {
-  const { statusOptions, priorityOptions, renderStatus, renderPriority, focusId, ask, onOpenDetail } = useContext(BlockCtx);
+  const { statusOptions, priorityOptions, renderStatus, renderPriority, sortedStatusIds, focusId, ask, onOpenDetail } = useContext(BlockCtx);
   const [open, setOpen] = useState(false);
 
   return (
     <div>
       {/* Goal header row */}
-      <div className={`${GRID} items-center px-2 py-1.5 border-b border-gray-100 group transition-colors hover:bg-indigo-50/20 bg-gray-50/40`}>
+      <div className={`${GRID} items-center px-2 py-1.5 border-b border-gray-100 dark:border-gray-700 group transition-colors hover:bg-indigo-50/20 dark:hover:bg-indigo-900/10 bg-gray-50/40 dark:bg-gray-800/20`}>
         {/* Expand chevron */}
         <button onClick={() => setOpen(o => !o)} className="flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors">
           {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
@@ -149,22 +158,28 @@ function BlockGoalSection({ goal, blockTasks, onUpdateGoal, onDeleteGoal, onUpda
 
         {/* Title */}
         <div className="flex items-center gap-1.5 min-w-0 pr-2">
-          <button onClick={() => onOpenDetail({ kind: 'goal', id: goal.id })} className="text-[9px] font-mono text-gray-300 shrink-0 hover:text-indigo-400 transition-colors leading-none">{goal.id}</button>
+          <button onClick={() => onOpenDetail({ kind: 'goal', id: goal.id })} className="text-[9px] font-mono shrink-0 leading-none px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{goal.id}</button>
           <EditableText value={goal.title} onChange={v => onUpdateGoal({ title: v })} placeholder="Goal title..." bold autoFocus={focusId === goal.id} />
         </div>
 
         <div className="pr-1">
           <SelectCell value={goal.priorityId} options={priorityOptions} renderBadge={renderPriority} onChange={v => onUpdateGoal({ priorityId: v })} />
         </div>
-        <div className="pr-1">
+        <div className="pr-1 flex items-center gap-0.5">
           <SelectCell value={goal.statusId} options={statusOptions} renderBadge={renderStatus} onChange={v => onUpdateGoal({ statusId: v })} />
+          <button
+            onClick={e => { e.stopPropagation(); const i = sortedStatusIds.indexOf(goal.statusId); onUpdateGoal({ statusId: sortedStatusIds[(i + 1) % sortedStatusIds.length] }); }}
+            title="Next status"
+            className="shrink-0 flex items-center justify-center w-4 h-4 rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-400 hover:border-gray-400 dark:hover:border-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          ><ChevronRight size={9} /></button>
         </div>
         <DateCell value={goal.dueDate} onChange={v => onUpdateGoal({ dueDate: v })} />
         <div className="flex items-center"><FocusButtons dueDate={goal.dueDate} onChange={v => onUpdateGoal({ dueDate: v })} /></div>
 
         <div className="flex items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={onAddSubTask} title="Add task" className="p-0.5 rounded hover:bg-indigo-50 text-indigo-400 transition-colors"><Plus size={11} /></button>
-          <button onClick={() => ask('Delete Goal', `"${goal.title || 'Untitled'}" and all its tasks will be permanently deleted.`, onDeleteGoal)} className="p-0.5 rounded hover:bg-red-50 text-red-400 transition-colors"><Trash2 size={11} /></button>
+          <button onClick={onAddSubTask} title="Add task" className="p-1 rounded hover:bg-indigo-50 text-indigo-400 transition-colors"><Plus size={13} /></button>
+          <a href={buildCalendarUrl(goal.title, goal.description || undefined, goal.dueDate || undefined)} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} title="Add to Google Calendar" className="p-1 rounded hover:bg-blue-50 text-blue-400 transition-colors"><CalendarPlus size={13} /></a>
+          <button onClick={() => ask('Delete Goal', `"${goal.title || 'Untitled'}" and all its tasks will be permanently deleted.`, onDeleteGoal)} className="p-1 rounded hover:bg-red-50 text-red-400 transition-colors"><Trash2 size={13} /></button>
         </div>
       </div>
 
@@ -183,7 +198,7 @@ function BlockGoalSection({ goal, blockTasks, onUpdateGoal, onDeleteGoal, onUpda
 
       {/* Add sub-task inline */}
       {open && (
-        <button onClick={onAddSubTask} className="w-full flex items-center gap-1.5 pl-10 pr-3 py-1.5 text-xs text-gray-400 hover:text-indigo-600 hover:bg-indigo-50/30 border-b border-gray-100 transition-colors">
+        <button onClick={onAddSubTask} className="w-full flex items-center gap-1.5 pl-10 pr-3 py-1.5 text-xs text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 border-b border-gray-100 dark:border-gray-700 transition-colors">
           <Plus size={11} /> Add task
         </button>
       )}
@@ -218,7 +233,7 @@ function DroppableBlockColumn({ block, goalsWithTasks, standaloneTasks, activeTa
   const taskCount = goalsWithTasks.reduce((n, { blockTasks }) => n + blockTasks.length, 0) + standaloneTasks.length;
 
   return (
-    <div className="flex flex-col min-h-0 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="flex flex-col min-h-0 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
       {/* Section header */}
       <div className="flex items-center justify-between px-3 py-2.5" style={{ backgroundColor: block.color }}>
         <div className="flex items-center gap-2">
@@ -240,11 +255,11 @@ function DroppableBlockColumn({ block, goalsWithTasks, standaloneTasks, activeTa
       </div>
 
       {/* Column headers */}
-      <div className={`${GRID} items-center px-2 py-1 border-b border-gray-200 bg-gray-50`}>
+      <div className={`${GRID} items-center px-2 py-1 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60`}>
         <div />
         {([['title','Title'],['priority','Priority'],['status','Status'],['dueDate','Due']] as [SortField,string][]).map(([f,lbl]) => (
           <button key={f} onClick={() => onSort(f)}
-            className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest select-none transition-colors ${sortField === f ? 'text-indigo-500' : 'text-gray-400 hover:text-gray-600'}`}>
+            className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest select-none transition-colors ${sortField === f ? 'text-indigo-500' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}>
             {lbl}
             {sortField === f && (sortDir === 'asc' ? <ArrowUp size={8} strokeWidth={3} /> : <ArrowDown size={8} strokeWidth={3} />)}
           </button>
@@ -288,13 +303,13 @@ function DroppableBlockColumn({ block, goalsWithTasks, standaloneTasks, activeTa
 
         {taskCount === 0 && (
           <div className="flex-1 flex items-center justify-center py-4">
-            <p className="text-xs text-gray-300 italic">No tasks — drop here or click +</p>
+            <p className="text-xs text-gray-300 dark:text-gray-600 italic">No tasks — drop here or click +</p>
           </div>
         )}
       </div>
 
       {/* Add task footer */}
-      <button onClick={onAddTask} className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-gray-400 hover:text-indigo-600 hover:bg-indigo-50/30 border-t border-gray-100 transition-colors">
+      <button onClick={onAddTask} className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 border-t border-gray-100 dark:border-gray-700 transition-colors">
         <Plus size={12} /> Add task
       </button>
     </div>
@@ -413,6 +428,7 @@ export function BlockView({ store, onOpenDetail }: Props) {
 
   const ctxValue: BlockCtxType = {
     statusOptions, priorityOptions, renderStatus, renderPriority,
+    sortedStatusIds: sortedStatuses.map(s => s.id),
     focusId, activeTaskId, ask, onOpenDetail,
     sortField, sortDir, onSort: handleSort,
   };
@@ -422,8 +438,8 @@ export function BlockView({ store, onOpenDetail }: Props) {
     {dialog}
     <BlockCtx.Provider value={ctxValue}>
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
-        {blocks.slice(0, 4).map(block => {
+      <div className="grid gap-4 h-full" style={{ gridTemplateColumns: `repeat(${Math.min(blocks.length, 2)}, 1fr)` }}>
+        {blocks.map(block => {
           const { goalsInBlock, standaloneTasks } = contentForBlock(block.id);
           const goalsWithTasks = goalsInBlock.map(g => ({ goal: g, blockTasks: goalTasksInBlock(g, block.id) }));
           return (
@@ -437,9 +453,9 @@ export function BlockView({ store, onOpenDetail }: Props) {
               onAddSubTaskToGoal={goalId => handleAddSubTaskToGoal(goalId, block.id)}
               onPromoteAndAdd={task => handlePromoteAndAdd(task, block.id)}
               onUpdateGoal={(goalId, data) => updateGoal(goalId, data)}
-              onDeleteGoal={goalId => deleteGoal(goalId)}
+              onDeleteGoal={goalId => { deleteGoal(goalId); toast.success('Goal deleted'); }}
               onUpdateTask={(taskId, data) => updateTask(taskId, data)}
-              onDeleteTask={taskId => deleteTask(taskId)}
+              onDeleteTask={taskId => { deleteTask(taskId); toast.success('Task deleted'); }}
               onDetachTask={taskId => detachTask(taskId)}
             />
           );
@@ -448,9 +464,9 @@ export function BlockView({ store, onOpenDetail }: Props) {
 
       <DragOverlay>
         {activeTask && (
-          <div className="bg-white rounded-lg border-2 border-indigo-400 px-3 py-2 shadow-xl max-w-[220px] rotate-1 opacity-95">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border-2 border-indigo-400 px-3 py-2 shadow-xl max-w-[220px] rotate-1 opacity-95">
             <p className="text-[9px] font-mono text-gray-400 mb-0.5">{activeTask.id}</p>
-            <p className="text-sm font-medium text-gray-800 leading-snug">{activeTask.title || 'Untitled'}</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug">{activeTask.title || 'Untitled'}</p>
           </div>
         )}
       </DragOverlay>

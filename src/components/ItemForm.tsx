@@ -85,17 +85,17 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <form
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
+        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
         onClick={e => e.stopPropagation()}
         onSubmit={handleSubmit}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">
             {initial?.id ? 'Edit' : 'New'} {mode === 'goal' ? 'Goal' : 'Task'}
-            {initial?.id && <span className="ml-2 text-xs font-mono text-gray-400">{initial.id}</span>}
+            {initial?.id && <span className="ml-2 text-xs font-mono text-gray-400 dark:text-gray-500">{initial.id}</span>}
           </h2>
-          <button type="button" onClick={onClose} className="p-1 rounded hover:bg-gray-100 text-gray-400">
+          <button type="button" onClick={onClose} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400">
             <X size={18} />
           </button>
         </div>
@@ -104,7 +104,7 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
           {/* Title */}
           <input
             autoFocus
-            className="w-full text-lg font-medium border-0 border-b-2 border-gray-100 focus:border-indigo-400 focus:outline-none pb-1 placeholder:text-gray-300 transition"
+            className="w-full text-lg font-medium border-0 border-b-2 border-gray-100 dark:border-gray-700 focus:border-indigo-400 focus:outline-none pb-1 placeholder:text-gray-300 dark:placeholder:text-gray-600 dark:text-gray-100 dark:bg-transparent transition"
             placeholder={mode === 'goal' ? 'Goal title...' : 'Task title...'}
             value={form.title}
             onChange={e => set('title', e.target.value)}
@@ -113,7 +113,7 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
           {/* Description */}
           <textarea
             rows={2}
-            className="w-full text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none placeholder:text-gray-300"
+            className="w-full text-sm text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none placeholder:text-gray-300 dark:placeholder:text-gray-600"
             placeholder="Description (optional)"
             value={form.description}
             onChange={e => set('description', e.target.value)}
@@ -122,9 +122,9 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
           {/* Priority + Status */}
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Priority</label>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Priority</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 value={form.priorityId}
                 onChange={e => set('priorityId', e.target.value)}
               >
@@ -132,9 +132,9 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 value={form.statusId}
                 onChange={e => set('statusId', e.target.value)}
               >
@@ -146,19 +146,19 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
           {/* Due date + Assigned to */}
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Due Date</label>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Due Date</label>
               <input
                 type="date"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 value={form.dueDate}
                 onChange={e => set('dueDate', e.target.value)}
               />
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Delegate to</label>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Delegate to</label>
               {settings.people.length > 0 ? (
                 <select
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   value={form.assignedTo}
                   onChange={e => set('assignedTo', e.target.value)}
                 >
@@ -170,7 +170,7 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
               ) : (
                 <input
                   type="email"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   placeholder="email... (add people in Settings)"
                   value={form.assignedTo}
                   onChange={e => set('assignedTo', e.target.value)}
@@ -182,7 +182,7 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
           {/* Tags */}
           {settings.tags.length > 0 && (
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Tags</label>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tags</label>
               <div className="flex flex-wrap gap-2">
                 {settings.tags.map(tag => (
                   <button
@@ -204,9 +204,9 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
           )}
 
           {/* Google Calendar */}
-          <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+          <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 p-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                 <Calendar size={13} /> Google Calendar
               </span>
               {calSynced ? (
@@ -228,8 +228,8 @@ export function ItemForm({ mode, initial, settings, onSave, onClose, onCalendarS
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Cancel</button>
           <button type="submit" className="px-5 py-2 text-sm bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition">
             {initial?.id ? 'Save Changes' : `Create ${mode === 'goal' ? 'Goal' : 'Task'}`}
           </button>
